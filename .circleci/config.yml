@@ -3,6 +3,20 @@
 version: 2.1
 jobs:
   install:
+    docker:
+      - image: circleci/python:3.6.2-stretch-browsers
+    steps:
+      - checkout
+      - run:
+          name: Install Python deps in a venv
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r webserver/requirements.txt
+      - save_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "webserver/requirements.txt" }}
+          paths:
+            - "venv"
   test:
   deploy:
 
@@ -11,9 +25,9 @@ workflows:
  deploy-server:
    jobs:
      - install
-     - test:
-         requires:
-           - install
-     - deploy:
-         requires:
-           - deploy
+     # - test:
+     #     requires:
+     #       - install
+     # - deploy:
+     #     requires:
+     #       - deploy
