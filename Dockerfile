@@ -9,7 +9,11 @@ WORKDIR /app
 
 RUN pip install -r requirements.txt
 
+ADD test.sh ./
+
 COPY webserver /app
+
+RUN /bin/bash test.sh
 
 ENTRYPOINT [ "python" ]
 
