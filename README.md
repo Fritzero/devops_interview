@@ -17,7 +17,7 @@ TCP Port 22 from 104.154.0.0/15 (GOOGLE LLC)
 Allow all tcp/udp internal traffic within the VPC
 ```
 
-## The problem:
+## The Problem:
 The above cloud-native application was manually configured using Web console UIs, and it was accidently deleted by a junior developer. None of the cloud firewall rules were captured in IaC, and neither is the VM configuration. Your assignment is to create the cloud resources in configuration files, and setup CI/CD to create/update the rules based on code changes in the master branch. This would allow arbitrary deploys of the application stack, resilient to incidents. It also allows a team of DevOps engineers to collaborate on new infrastructure definitions.
 
 ## Requirements:
@@ -27,3 +27,9 @@ The above cloud-native application was manually configured using Web console UIs
 - (Theoretically deployed) Working public IP address to see "Hello World from BenchSci!" in a web browser
 - Basic Documentation (README.md) and architecture diagram
 - Avoid: Unnecessary abstractions in the form of configuration templates and/or modules
+
+## Solution:
+
+CircleCI builds a Docker image and uploads the image to Amazon ECR. When building the docker image, a test script is run to trigger pylint, pytest and pytest-coverage of the webserver directory. After a successful build, it will update the Amazon ECS cluster with the latest image.
+
+The terraform directory brings up a VPC with a public load balancer, AWS ECR repository and AWS ECS cluster. The public load balancer forwards HTTP requests to a target group which is attached to an EC2 autoscaling group running the Dockerized version of the webserver with the specified security groups. The public ip/url that you would access the site would be the public dns of the public load balancer.
