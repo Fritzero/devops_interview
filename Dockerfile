@@ -13,6 +13,8 @@ ADD test.sh ./
 
 COPY webserver /app
 
+COPY tests /app
+
 RUN /bin/bash test.sh
 
 ENTRYPOINT [ "python" ]

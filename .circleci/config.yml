@@ -17,3 +17,4 @@ workflows:
           family: "webserver"
           cluster-name: "devops-interview-cluster"
           container-image-name-updates: "container=webserver,tag=${CIRCLE_SHA1}"
+    # Perform a curl on the load balancers public url to ensure service is successfully running
