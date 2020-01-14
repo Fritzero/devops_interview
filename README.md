@@ -33,3 +33,5 @@ The above cloud-native application was manually configured using Web console UIs
 CircleCI builds a Docker image and uploads the image to Amazon ECR. When building the docker image, a test script is run to trigger pylint, pytest and pytest-coverage of the webserver directory. After a successful build, it will update the Amazon ECS cluster with the latest image.
 
 The terraform directory brings up a VPC with a public load balancer, AWS ECR repository and AWS ECS cluster. The public load balancer forwards HTTP requests to a target group which is attached to an EC2 autoscaling group running the Dockerized version of the webserver with the specified security groups. The public ip/url that you would access the site would be the public dns of the public load balancer.
+
+![alt text](arch_diagram.png)

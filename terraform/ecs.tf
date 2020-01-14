@@ -4,7 +4,7 @@ resource "aws_ecs_cluster" "cluster" {
 
 resource "aws_autoscaling_group" "cluster" {
   name                      = "devops-interview-webserver-asg"
-  vpc_zone_identifier       = values(aws_subnet.public_subnets).*.id
+  vpc_zone_identifier       = values(aws_subnet.private_subnets).*.id
   min_size                  = 1
   max_size                  = 3
   desired_capacity          = 1
