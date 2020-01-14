@@ -1,33 +1,19 @@
-# You're free to change the jobs and the workflow logic as needed.
-# Doc: https://circleci.com/docs/2.0/getting-started/#running-your-first-circleci-build
 version: 2.1
-jobs:
-  install:
-    docker:
-      - image: circleci/python:3.6.2-stretch-browsers
-    steps:
-      - checkout
-      - run:
-          name: Install Python deps in a venv
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r webserver/requirements.txt
-      - save_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "webserver/requirements.txt" }}
-          paths:
-            - "venv"
-  test:
-  deploy:
-
+orbs:
+  aws-ecr: circleci/aws-ecr@0.0.2
+  aws-ecs: circleci/aws-ecs@0.0.8
 workflows:
- version: 2
- deploy-server:
-   jobs:
-     - install
-     # - test:
-     #     requires:
-     #       - install
-     # - deploy:
-     #     requires:
-     #       - deploy
+  build-and-deploy:
+    jobs:
+      - aws-ecr/build_and_push_image:
+          account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com"
+          repo: "devops-interview-repo"
+          region: "us-east-1"
+          tag: "${CIRCLE_SHA1}"
+      - aws-ecs/deploy-service-update:
+          requires:
+            - aws-ecr/build_and_push_image
+          aws-region: "us-east-1"
+          family: "webserver"
+          cluster-name: "devops-interview-cluster"
+          container-image-name-updates: "container=webserver,tag=${CIRCLE_SHA1}"
